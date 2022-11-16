@@ -6,14 +6,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import checker.CheckerConstants;
+import fileio.CardInput;
 import fileio.Input;
+import fileio.StartGameInput;
+import main.card.Card;
+import main.card.EnvironmentCard;
+import main.card.HeroCard;
+import main.card.MinionCard;
+import main.command.Command;
+import main.command.GetPlayerDeck;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The entry point to this homework. It runs the checker that tests your implentation.
@@ -70,6 +80,53 @@ public final class Main {
         ArrayNode output = objectMapper.createArrayNode();
 
         //TODO add here the entry point to your implementation
+        Player player1 = new Player(inputData.getPlayerOneDecks());
+        Player player2 = new Player(inputData.getPlayerTwoDecks());
+
+        inputData.getGames().forEach(gameInput -> {
+            StartGameInput startGameInput = gameInput.getStartGame();
+
+            player1.setHeroCard(new HeroCard(startGameInput.getPlayerOneHero()));
+            player2.setHeroCard(new HeroCard(startGameInput.getPlayerTwoHero()));
+
+            Game game = new Game(
+                    player1,
+                    player2,
+                    startGameInput
+            );
+
+            gameInput.getActions().forEach(actionsInput -> {
+                switch (actionsInput.getCommand()) {
+                    case "getPlayerDeck":
+                        output.addObject()
+                                .put("command", actionsInput.getCommand())
+                                .put("playerIdx", actionsInput.getPlayerIdx())
+                                .putPOJO("output",
+                                        (actionsInput.getPlayerIdx() == 1)
+                                                ? game.getPlayer1Deck().getCards()
+                                                : game.getPlayer2Deck().getCards()
+                                );
+                        break;
+                    case "getPlayerHero":
+                        output.addObject()
+                                .put("command", actionsInput.getCommand())
+                                .put("playerIdx", actionsInput.getPlayerIdx())
+                                .putPOJO("output",
+                                        (actionsInput.getPlayerIdx() == 1)
+                                                ? game.getPlayer1().getHeroCard()
+                                                : game.getPlayer2().getHeroCard()
+                                );
+                        break;
+                    case "getPlayerTurn":
+                        output.addObject()
+                                .put("command", actionsInput.getCommand())
+                                .put("output", game.getPlayerTurn());
+                        break;
+                    default:
+                        break;
+                }
+            });
+        });
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
