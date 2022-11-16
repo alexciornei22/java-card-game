@@ -16,6 +16,7 @@ import main.card.MinionCard;
 import main.command.Command;
 import main.command.GetPlayerDeck;
 
+import javax.swing.plaf.IconUIResource;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -96,38 +97,20 @@ public final class Main {
             );
 
             gameInput.getActions().forEach(actionsInput -> {
-                switch (actionsInput.getCommand()) {
-                    case "getPlayerDeck":
-                        output.addObject()
-                                .put("command", actionsInput.getCommand())
-                                .put("playerIdx", actionsInput.getPlayerIdx())
-                                .putPOJO("output",
-                                        (actionsInput.getPlayerIdx() == 1)
-                                                ? game.getPlayer1Deck().getCards()
-                                                : game.getPlayer2Deck().getCards()
-                                );
-                        break;
-                    case "getPlayerHero":
-                        output.addObject()
-                                .put("command", actionsInput.getCommand())
-                                .put("playerIdx", actionsInput.getPlayerIdx())
-                                .putPOJO("output",
-                                        (actionsInput.getPlayerIdx() == 1)
-                                                ? game.getPlayer1().getHeroCard()
-                                                : game.getPlayer2().getHeroCard()
-                                );
-                        break;
-                    case "getPlayerTurn":
-                        output.addObject()
-                                .put("command", actionsInput.getCommand())
-                                .put("output", game.getPlayerTurn());
-                        break;
-                    default:
-                        break;
-                }
+                Command commandObject = game.getCommandObject(actionsInput);
+                System.out.println(actionsInput.getCommand());
+
+                commandObject.execute(output);
+
+                game.getPlayer1().getHand().forEach(card -> System.out.print(card.getName() + " "));
+                System.out.println();
+                game.getPlayer2().getHand().forEach(card -> System.out.print(card.getName() + " "));
+                System.out.println();
+                System.out.println();
             });
         });
 
+        System.out.println(output);
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
     }

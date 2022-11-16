@@ -2,12 +2,15 @@ package main.command;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import main.Game;
+import main.card.Card;
 
-public class GetPlayerDeck implements Command {
+import java.util.ArrayList;
+
+public class GetCardsInHand implements Command {
     Game game;
     int playerIdx;
 
-    public GetPlayerDeck(Game game, int playerIdx) {
+    public GetCardsInHand(Game game, int playerIdx) {
         this.game = game;
         this.playerIdx = playerIdx;
     }
@@ -15,12 +18,12 @@ public class GetPlayerDeck implements Command {
     @Override
     public void execute(ArrayNode output) {
         output.addObject()
-                .put("command", "getPlayerDeck")
+                .put("command", "getCardsInHand")
                 .put("playerIdx", playerIdx)
                 .putPOJO("output",
                         (playerIdx == 1)
-                                ? game.getPlayer1Deck().getCards()
-                                : game.getPlayer2Deck().getCards()
+                                ? new ArrayList<Card>(game.getPlayer1().getHand())
+                                : new ArrayList<Card>(game.getPlayer2().getHand())
                 );
     }
 }

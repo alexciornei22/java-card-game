@@ -28,9 +28,12 @@ public class Player {
         return mana;
     }
 
-    public void addMana() {
-        if (mana < 10)
-            mana++;
+    public void addMana(int mana) {
+        this.mana += mana;
+    }
+
+    public void removeMana(int mana) {
+        this.mana -= mana;
     }
 
     public HeroCard getHeroCard() {
@@ -43,5 +46,10 @@ public class Player {
 
     public ArrayList<Card> getHand() {
         return hand;
+    }
+
+    public void addCardToHand(int deckIdx) {
+        if (!decks.get(deckIdx).getCards().isEmpty())
+        hand.add(decks.get(deckIdx).getCards().remove(0));
     }
 }

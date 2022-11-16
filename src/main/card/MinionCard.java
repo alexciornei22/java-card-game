@@ -49,4 +49,9 @@ public class MinionCard extends Card {
     public void useSpecialAbility(MinionCard target) {
         this.specialAbility.use(this, target);
     }
+
+    @Override
+    public boolean canBePlacedOnTable() {
+        return true;
+    }
 }

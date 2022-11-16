@@ -2,12 +2,14 @@ package main.card;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fileio.CardInput;
+import main.Game;
 
 @JsonIgnoreProperties({"frozen"})
 public class Card {
     int mana;
     String description;
     String[] colors;
+    String name;
 
     public Card(int mana, String description, String[] colors, String name) {
         this.mana = mana;
@@ -55,5 +57,14 @@ public class Card {
         this.name = name;
     }
 
-    String name;
+    public boolean canBePlacedOnTable() {
+        return false;
+    }
+
+    public static int getCardRow(Card card, int playerIdx) {
+        if (Game.FRONT_ROW_CARDS.contains(card.getName())) {
+            return (playerIdx == 1)? 2 : 1;
+        } else
+            return (playerIdx == 1)? 3 : 0;
+    }
 }
