@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import main.Game;
 import main.Player;
 import main.card.Card;
+import main.card.MinionCard;
 
 public class PlaceCard implements Command {
     Game game;
@@ -46,7 +47,7 @@ public class PlaceCard implements Command {
         } else {
             player.getHand().remove(handIdx);
             player.removeMana(card.getMana());
-            game.placeCardOnTable(card, row);
+            game.placeCardOnTable((MinionCard) card, row);
         }
     }
 }

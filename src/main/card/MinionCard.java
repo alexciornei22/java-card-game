@@ -18,6 +18,16 @@ public class MinionCard extends Card {
         this.attackDamage = cardInput.getAttackDamage();
     }
 
+    public MinionCard(MinionCard card) {
+        super();
+        health = card.health;
+        attackDamage = card.attackDamage;
+        name = card.name;
+        description = card.description;
+        colors = card.colors;
+        mana = card.mana;
+    }
+
     public void setSpecialAbility(SpecialAbility specialAbility) {
         this.specialAbility = specialAbility;
     }
@@ -44,6 +54,10 @@ public class MinionCard extends Card {
 
     public void setFrozen(boolean frozen) {
         this.frozen = frozen;
+    }
+
+    public void removeHealth(int health) {
+        this.health -= health;
     }
 
     public void useSpecialAbility(MinionCard target) {

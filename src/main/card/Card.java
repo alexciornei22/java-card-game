@@ -25,6 +25,8 @@ public class Card {
         this.name = cardInput.getName();
     }
 
+    public Card() {}
+
     public int getMana() {
         return mana;
     }

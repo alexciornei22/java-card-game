@@ -101,6 +101,7 @@ public final class Main {
                 System.out.println(actionsInput.getCommand());
 
                 commandObject.execute(output);
+                game.removeDeadCards();
 
                 game.getPlayer1().getHand().forEach(card -> System.out.print(card.getName() + " "));
                 System.out.println();

@@ -3,10 +3,11 @@ package main;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
 import fileio.StartGameInput;
-import main.card.Card;
+import main.card.MinionCard;
 import main.command.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Game {
     public static final List<String> ENVIRONMENT_CARDS = Collections.unmodifiableList(
@@ -40,7 +41,7 @@ public class Game {
     int turn = 1;
     int round = 1;
     int playerTurn;
-    ArrayList<ArrayList<Card>> table = new ArrayList<ArrayList<Card>>();
+    ArrayList<ArrayList<MinionCard>> table = new ArrayList<ArrayList<MinionCard>>();
 
     public Game(Player player1, Player player2, StartGameInput startGameInput) {
 
@@ -50,10 +51,10 @@ public class Game {
         player2DeckId = startGameInput.getPlayerTwoDeckIdx();
         playerTurn = startGameInput.getStartingPlayer();
 
-        table.add(new ArrayList<Card>());
-        table.add(new ArrayList<Card>());
-        table.add(new ArrayList<Card>());
-        table.add(new ArrayList<Card>());
+        table.add(new ArrayList<MinionCard>());
+        table.add(new ArrayList<MinionCard>());
+        table.add(new ArrayList<MinionCard>());
+        table.add(new ArrayList<MinionCard>());
 
         Collections.shuffle(getPlayer1Deck().getCards(), new Random(startGameInput.getShuffleSeed()));
         Collections.shuffle(getPlayer2Deck().getCards(), new Random(startGameInput.getShuffleSeed()));
@@ -90,34 +91,6 @@ public class Game {
         this.playerTurn = playerTurn;
     }
 
-    public Command getCommandObject(ActionsInput actionsInput) {
-        switch (actionsInput.getCommand()) {
-            case "getPlayerDeck":
-                return new GetPlayerDeck(this, actionsInput.getPlayerIdx());
-            case "getPlayerHero":
-                return new GetPlayerHero(this, actionsInput.getPlayerIdx());
-            case "getPlayerTurn":
-                return new GetPlayerTurn(this);
-            case "endPlayerTurn":
-                return new EndPlayerTurn(this);
-            case "placeCard":
-                return new PlaceCard(this, actionsInput.getHandIdx());
-            case "getPlayerMana":
-                return new GetPlayerMana(this, actionsInput.getPlayerIdx());
-            case "getCardsInHand":
-                return new GetCardsInHand(this, actionsInput.getPlayerIdx());
-            case "getCardsOnTable":
-                return new GetCardsOnTable(this);
-            default:
-                return new Command() {
-                    @Override
-                    public void execute(ArrayNode output) {
-                        output.addObject().put("error", "Command not found");
-                    }
-                };
-        }
-    }
-
     public void endCurrentTurn() {
         if (++turn > 2)
             nextRound();
@@ -141,11 +114,83 @@ public class Game {
         return table.get(row).size() == 5;
     }
 
-    public void placeCardOnTable(Card card, int row) {
+    public boolean rowBelongsToEnemy(int row) {
+        if (playerTurn == 1 && (row == 2 || row == 3))
+            return false;
+        if (playerTurn == 2 && (row == 0 || row == 1))
+            return false;
+        return true;
+    }
+
+    public int getMirrorRow(int row) {
+        if (playerTurn == 1)
+            return (row == 0)? 3 : 2;
+        return (row == 3)? 0 : 1;
+    }
+
+    public void placeCardOnTable(MinionCard card, int row) {
         table.get(row).add(card);
     }
 
-    public ArrayList<ArrayList<Card>> getCardsOnTable() {
+    public ArrayList<ArrayList<MinionCard>> getCardsOnTable() {
         return table;
     }
+
+    public ArrayList<MinionCard> getRow(int affectedRow) {
+        return table.get(affectedRow);
+    }
+
+    public MinionCard getCardAtPosition(int x, int y) {
+        try {
+            return table.get(x).get(y);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    public void removeDeadCards() {
+        table.forEach(minionCards -> {
+            List<MinionCard> deadCards = minionCards.stream()
+                    .filter(minionCard -> minionCard.getHealth() <= 0)
+                    .toList();
+            minionCards.removeAll(deadCards);
+        });
+    }
+
+    public Command getCommandObject(ActionsInput actionsInput) {
+        switch (actionsInput.getCommand()) {
+            case "getPlayerDeck":
+                return new GetPlayerDeck(this, actionsInput.getPlayerIdx());
+            case "getPlayerHero":
+                return new GetPlayerHero(this, actionsInput.getPlayerIdx());
+            case "getPlayerTurn":
+                return new GetPlayerTurn(this);
+            case "endPlayerTurn":
+                return new EndPlayerTurn(this);
+            case "placeCard":
+                return new PlaceCard(this, actionsInput.getHandIdx());
+            case "getPlayerMana":
+                return new GetPlayerMana(this, actionsInput.getPlayerIdx());
+            case "getCardsInHand":
+                return new GetCardsInHand(this, actionsInput.getPlayerIdx());
+            case "getCardsOnTable":
+                return new GetCardsOnTable(this);
+            case "getFrozenCardsOnTable":
+                return new GetFrozenCardsOnTable(this);
+            case "useEnvironmentCard":
+                return new UseEnvironmentCard(this, actionsInput.getHandIdx(), actionsInput.getAffectedRow());
+            case "getEnvironmentCardsInHand":
+                return new GetEnvironmentCardsInHand(this, actionsInput.getPlayerIdx());
+            case "getCardAtPosition":
+                return new GetCardAtPosition(this, actionsInput.getX(), actionsInput.getY());
+            default:
+                return new Command() {
+                    @Override
+                    public void execute(ArrayNode output) {
+                        output.addObject().put("error", "Command not found");
+                    }
+                };
+        }
+    }
+
 }
