@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import checker.CheckerConstants;
+import fileio.ActionsInput;
 import fileio.CardInput;
 import fileio.Input;
 import fileio.StartGameInput;
@@ -96,21 +97,21 @@ public final class Main {
                     startGameInput
             );
 
-            gameInput.getActions().forEach(actionsInput -> {
+            for (ActionsInput actionsInput:
+                 gameInput.getActions()) {
                 Command commandObject = game.getCommandObject(actionsInput);
-                System.out.println(actionsInput.getCommand());
-                System.out.println(game.rowHasTanks(1));
-                System.out.println(game.rowHasTanks(2));
+//                System.out.println(actionsInput.getCommand());
+//                System.out.println(game.rowHasTanks(1));
+//                System.out.println(game.rowHasTanks(2));
 
                 commandObject.execute(output);
                 game.removeDeadCards();
-
-                game.getPlayer1().getHand().forEach(card -> System.out.print(card.getName() + " "));
-                System.out.println();
-                game.getPlayer2().getHand().forEach(card -> System.out.print(card.getName() + " "));
-                System.out.println();
-                System.out.println();
-            });
+//                game.getPlayer1().getHand().forEach(card -> System.out.print(card.getName() + " "));
+//                System.out.println();
+//                game.getPlayer2().getHand().forEach(card -> System.out.print(card.getName() + " "));
+//                System.out.println();
+//                System.out.println();
+            }
         });
 
         System.out.println(output);

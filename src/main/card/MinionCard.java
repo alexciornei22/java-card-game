@@ -82,6 +82,9 @@ public class MinionCard extends Card {
         card.removeHealth(attackDamage);
     }
 
+    public void attackHero(HeroCard heroCard) {
+        heroCard.removeHealth(attackDamage);
+    }
     @Override
     public boolean canBePlacedOnTable() {
         return true;

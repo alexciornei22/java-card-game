@@ -2,6 +2,7 @@ package main.command;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import main.Game;
+import main.card.HeroCard;
 
 public class GetPlayerHero implements Command {
     Game game;
@@ -19,8 +20,8 @@ public class GetPlayerHero implements Command {
                 .put("playerIdx", playerIdx)
                 .putPOJO("output",
                         (playerIdx == 1)
-                                ? game.getPlayer1().getHeroCard()
-                                : game.getPlayer2().getHeroCard()
+                                ? new HeroCard(game.getPlayer1().getHeroCard())
+                                : new HeroCard(game.getPlayer2().getHeroCard())
                 );
     }
 }

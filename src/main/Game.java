@@ -3,6 +3,7 @@ package main;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
 import fileio.StartGameInput;
+import main.card.HeroCard;
 import main.card.MinionCard;
 import main.command.*;
 
@@ -76,6 +77,10 @@ public final class Game {
 
     public Player getPlayer2() {
         return player2;
+    }
+
+    public Player getEnemyPlayer() {
+        return (playerTurn == 1)? player2 : player1;
     }
 
     public Deck getPlayer1Deck() {
@@ -202,6 +207,10 @@ public final class Game {
         return rowHasTanks(2);
     }
 
+    public boolean isGameOver() {
+        return player1.getHeroCard().getHealth() <= 0 || player2.getHeroCard().getHealth() <= 0;
+    }
+
     public Command getCommandObject(ActionsInput actionsInput) {
         return switch (actionsInput.getCommand()) {
             case "getPlayerDeck" -> new GetPlayerDeck(this, actionsInput.getPlayerIdx());
@@ -213,6 +222,7 @@ public final class Game {
                     new CardUsesAttack(this, actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
             case "cardUsesAbility" ->
                     new CardUsesAbility(this, actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
+            case "useAttackHero" -> new UseAttackHero(this, actionsInput.getCardAttacker());
             case "getPlayerMana" -> new GetPlayerMana(this, actionsInput.getPlayerIdx());
             case "getCardsInHand" -> new GetCardsInHand(this, actionsInput.getPlayerIdx());
             case "getCardsOnTable" -> new GetCardsOnTable(this);
