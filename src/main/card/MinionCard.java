@@ -3,7 +3,7 @@ package main.card;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fileio.CardInput;
-import main.card.ability.SpecialAbility;
+import main.card.ability.*;
 
 @JsonPropertyOrder({"mana", "attackDamage", "health", "description", "colors", "name"})
 public class MinionCard extends Card {
@@ -16,16 +16,21 @@ public class MinionCard extends Card {
         super(cardInput);
         this.health = cardInput.getHealth();
         this.attackDamage = cardInput.getAttackDamage();
+
+        switch (name) {
+            case "The Ripper" -> specialAbility = new WeakKnees();
+            case "Miraj" -> specialAbility = new Skyjack();
+            case "The Cursed One" -> specialAbility = new Shapeshift();
+            case "Disciple" -> specialAbility = new GodsPlan();
+            default -> {
+            }
+        }
     }
 
     public MinionCard(MinionCard card) {
-        super();
+        super(card);
         health = card.health;
         attackDamage = card.attackDamage;
-        name = card.name;
-        description = card.description;
-        colors = card.colors;
-        mana = card.mana;
     }
 
     public void setSpecialAbility(SpecialAbility specialAbility) {
@@ -40,12 +45,21 @@ public class MinionCard extends Card {
         this.health = health;
     }
 
+    public void addHealth(int health) {
+        this.health += health;
+    }
     public int getAttackDamage() {
         return attackDamage;
     }
 
     public void setAttackDamage(int attackDamage) {
         this.attackDamage = attackDamage;
+    }
+
+    public void removeAttackDamage(int attackDamage) {
+        this.attackDamage -= attackDamage;
+        if (this.attackDamage < 0)
+            this.attackDamage = 0;
     }
 
     public boolean isFrozen() {
@@ -62,6 +76,10 @@ public class MinionCard extends Card {
 
     public void useSpecialAbility(MinionCard target) {
         this.specialAbility.use(this, target);
+    }
+
+    public void attackCard(MinionCard card) {
+        card.removeHealth(attackDamage);
     }
 
     @Override

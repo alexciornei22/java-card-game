@@ -9,7 +9,7 @@ import main.command.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Game {
+public final class Game {
     public static final List<String> ENVIRONMENT_CARDS = Collections.unmodifiableList(
             Arrays.asList(
                     "Winterfell",
@@ -33,6 +33,12 @@ public class Game {
                     "Disciple"
             )
     );
+    public static final List<String> TANK_CARDS = Collections.unmodifiableList(
+            Arrays.asList(
+                    "Goliath",
+                    "Warden"
+            )
+    );
 
     Player player1;
     Player player2;
@@ -42,6 +48,7 @@ public class Game {
     int round = 1;
     int playerTurn;
     ArrayList<ArrayList<MinionCard>> table = new ArrayList<ArrayList<MinionCard>>();
+    ArrayList<MinionCard> haveAttacked = new ArrayList<>();
 
     public Game(Player player1, Player player2, StartGameInput startGameInput) {
 
@@ -91,10 +98,33 @@ public class Game {
         this.playerTurn = playerTurn;
     }
 
+    public ArrayList<MinionCard> getHaveAttacked() {
+        return haveAttacked;
+    }
+
+    public void cardHasAttacked(MinionCard card) {
+        this.haveAttacked.add(card);
+    }
+
+    public void resetHaveAttacked() {
+        this.haveAttacked.clear();
+    }
+
+    public void unfreezeCards() {
+        if (playerTurn == 1) {
+            getRow(2).forEach(card -> card.setFrozen(false));
+            getRow(3).forEach(card -> card.setFrozen(false));
+        } else {
+            getRow(0).forEach(card -> card.setFrozen(false));
+            getRow(1).forEach(card -> card.setFrozen(false));
+        }
+    }
+
     public void endCurrentTurn() {
         if (++turn > 2)
             nextRound();
 
+        unfreezeCards();
         playerTurn = (playerTurn == 1)? 2 : 1;
     }
 
@@ -136,8 +166,8 @@ public class Game {
         return table;
     }
 
-    public ArrayList<MinionCard> getRow(int affectedRow) {
-        return table.get(affectedRow);
+    public ArrayList<MinionCard> getRow(int row) {
+        return table.get(row);
     }
 
     public MinionCard getCardAtPosition(int x, int y) {
@@ -157,40 +187,47 @@ public class Game {
         });
     }
 
-    public Command getCommandObject(ActionsInput actionsInput) {
-        switch (actionsInput.getCommand()) {
-            case "getPlayerDeck":
-                return new GetPlayerDeck(this, actionsInput.getPlayerIdx());
-            case "getPlayerHero":
-                return new GetPlayerHero(this, actionsInput.getPlayerIdx());
-            case "getPlayerTurn":
-                return new GetPlayerTurn(this);
-            case "endPlayerTurn":
-                return new EndPlayerTurn(this);
-            case "placeCard":
-                return new PlaceCard(this, actionsInput.getHandIdx());
-            case "getPlayerMana":
-                return new GetPlayerMana(this, actionsInput.getPlayerIdx());
-            case "getCardsInHand":
-                return new GetCardsInHand(this, actionsInput.getPlayerIdx());
-            case "getCardsOnTable":
-                return new GetCardsOnTable(this);
-            case "getFrozenCardsOnTable":
-                return new GetFrozenCardsOnTable(this);
-            case "useEnvironmentCard":
-                return new UseEnvironmentCard(this, actionsInput.getHandIdx(), actionsInput.getAffectedRow());
-            case "getEnvironmentCardsInHand":
-                return new GetEnvironmentCardsInHand(this, actionsInput.getPlayerIdx());
-            case "getCardAtPosition":
-                return new GetCardAtPosition(this, actionsInput.getX(), actionsInput.getY());
-            default:
-                return new Command() {
-                    @Override
-                    public void execute(ArrayNode output) {
-                        output.addObject().put("error", "Command not found");
-                    }
-                };
+    public boolean rowHasTanks(int row) {
+        List<MinionCard> tanks = getRow(row).stream()
+                .filter(card -> TANK_CARDS.contains(card.getName()))
+                .toList();
+
+        return tanks.size() != 0;
+    }
+
+    public boolean enemyHasTanks() {
+        if (playerTurn == 1) {
+            return rowHasTanks(1);
         }
+        return rowHasTanks(2);
+    }
+
+    public Command getCommandObject(ActionsInput actionsInput) {
+        return switch (actionsInput.getCommand()) {
+            case "getPlayerDeck" -> new GetPlayerDeck(this, actionsInput.getPlayerIdx());
+            case "getPlayerHero" -> new GetPlayerHero(this, actionsInput.getPlayerIdx());
+            case "getPlayerTurn" -> new GetPlayerTurn(this);
+            case "endPlayerTurn" -> new EndPlayerTurn(this);
+            case "placeCard" -> new PlaceCard(this, actionsInput.getHandIdx());
+            case "cardUsesAttack" ->
+                    new CardUsesAttack(this, actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
+            case "cardUsesAbility" ->
+                    new CardUsesAbility(this, actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
+            case "getPlayerMana" -> new GetPlayerMana(this, actionsInput.getPlayerIdx());
+            case "getCardsInHand" -> new GetCardsInHand(this, actionsInput.getPlayerIdx());
+            case "getCardsOnTable" -> new GetCardsOnTable(this);
+            case "getFrozenCardsOnTable" -> new GetFrozenCardsOnTable(this);
+            case "useEnvironmentCard" ->
+                    new UseEnvironmentCard(this, actionsInput.getHandIdx(), actionsInput.getAffectedRow());
+            case "getEnvironmentCardsInHand" -> new GetEnvironmentCardsInHand(this, actionsInput.getPlayerIdx());
+            case "getCardAtPosition" -> new GetCardAtPosition(this, actionsInput.getX(), actionsInput.getY());
+            default -> new Command() {
+                @Override
+                public void execute(ArrayNode output) {
+                    output.addObject().put("error", "Command not found: " + actionsInput.getCommand());
+                }
+            };
+        };
     }
 
 }

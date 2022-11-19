@@ -99,6 +99,8 @@ public final class Main {
             gameInput.getActions().forEach(actionsInput -> {
                 Command commandObject = game.getCommandObject(actionsInput);
                 System.out.println(actionsInput.getCommand());
+                System.out.println(game.rowHasTanks(1));
+                System.out.println(game.rowHasTanks(2));
 
                 commandObject.execute(output);
                 game.removeDeadCards();

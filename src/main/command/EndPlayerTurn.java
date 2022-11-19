@@ -13,5 +13,7 @@ public class EndPlayerTurn implements Command {
     @Override
     public void execute(ArrayNode output) {
         game.endCurrentTurn();
+        game.resetHaveAttacked();
+        game.removeDeadCards();
     }
 }

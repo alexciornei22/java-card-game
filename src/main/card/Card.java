@@ -27,6 +27,13 @@ public class Card {
 
     public Card() {}
 
+    public Card(Card card) {
+        mana = card.mana;
+        description = card.getDescription();
+        colors = card.getColors();
+        name = card.getName();
+    }
+
     public int getMana() {
         return mana;
     }
