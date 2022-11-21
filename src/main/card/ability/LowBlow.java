@@ -13,7 +13,7 @@ public class LowBlow implements RowAbility {
         MinionCard maxHealth = null;
         for (MinionCard card :
                 cards) {
-            if ( maxHealth == null || card.getAttackDamage() > maxHealth.getAttackDamage())
+            if ( maxHealth == null || card.getAttackDamage() >= maxHealth.getAttackDamage())
                 maxHealth = card;
         }
 

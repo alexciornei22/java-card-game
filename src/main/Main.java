@@ -114,7 +114,6 @@ public final class Main {
             }
         });
 
-        System.out.println(output);
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
     }
