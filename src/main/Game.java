@@ -3,6 +3,7 @@ package main;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
 import fileio.StartGameInput;
+import main.card.Card;
 import main.card.HeroCard;
 import main.card.MinionCard;
 import main.command.*;
@@ -49,7 +50,7 @@ public final class Game {
     int round = 1;
     int playerTurn;
     ArrayList<ArrayList<MinionCard>> table = new ArrayList<ArrayList<MinionCard>>();
-    ArrayList<MinionCard> haveAttacked = new ArrayList<>();
+    ArrayList<Card> haveAttacked = new ArrayList<>();
 
     public Game(Player player1, Player player2, StartGameInput startGameInput) {
 
@@ -103,11 +104,11 @@ public final class Game {
         this.playerTurn = playerTurn;
     }
 
-    public ArrayList<MinionCard> getHaveAttacked() {
+    public ArrayList<Card> getHaveAttacked() {
         return haveAttacked;
     }
 
-    public void cardHasAttacked(MinionCard card) {
+    public void cardHasAttacked(Card card) {
         this.haveAttacked.add(card);
     }
 
@@ -223,6 +224,7 @@ public final class Game {
             case "cardUsesAbility" ->
                     new CardUsesAbility(this, actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
             case "useAttackHero" -> new UseAttackHero(this, actionsInput.getCardAttacker());
+            case "useHeroAbility" -> new UseHeroAbility(this, actionsInput.getAffectedRow());
             case "getPlayerMana" -> new GetPlayerMana(this, actionsInput.getPlayerIdx());
             case "getCardsInHand" -> new GetCardsInHand(this, actionsInput.getPlayerIdx());
             case "getCardsOnTable" -> new GetCardsOnTable(this);
