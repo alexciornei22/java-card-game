@@ -112,6 +112,8 @@ public final class Main {
 //                System.out.println();
 //                System.out.println();
             }
+
+            Statistics.getInstance().reset();
         });
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();

@@ -3,6 +3,7 @@ package main.command;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.Coordinates;
 import main.Game;
+import main.Statistics;
 import main.card.MinionCard;
 
 public class UseAttackHero implements Command {
@@ -45,6 +46,9 @@ public class UseAttackHero implements Command {
             game.cardHasAttacked(card);
 
             if (game.isGameOver()) {
+                Statistics statistics = Statistics.getInstance();
+                statistics.addWin(game.getPlayerTurn());
+
                 output.addObject()
                         .put("gameEnded", "Player " +
                                 ((game.getPlayerTurn() == 1)? "one" : "two") +
