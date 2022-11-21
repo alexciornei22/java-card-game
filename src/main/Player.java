@@ -28,6 +28,10 @@ public class Player {
         return mana;
     }
 
+    public void setMana(int mana) {
+        this.mana = mana;
+    }
+
     public void addMana(int mana) {
         this.mana += mana;
     }

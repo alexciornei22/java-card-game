@@ -88,6 +88,9 @@ public final class Main {
         inputData.getGames().forEach(gameInput -> {
             StartGameInput startGameInput = gameInput.getStartGame();
 
+            player1.setMana(1);
+            player2.setMana(1);
+
             player1.setHeroCard(new HeroCard(startGameInput.getPlayerOneHero()));
             player2.setHeroCard(new HeroCard(startGameInput.getPlayerTwoHero()));
 
@@ -97,8 +100,22 @@ public final class Main {
                     startGameInput
             );
 
+//            System.out.println(game.getPlayer1Deck().getCards());
+//            System.out.println(game.getPlayer2Deck().getCards());
+//            System.out.println();
+
             for (ActionsInput actionsInput:
                  gameInput.getActions()) {
+
+//                if (gameInput.getStartGame().getShuffleSeed() == 935132) {
+//                    System.out.println(actionsInput.getCommand());
+//                    game.table.forEach(row -> {
+//                        row.forEach(card -> System.out.print(card.getName() + ", "));
+//                        System.out.println();
+//                    });
+//                    System.out.println("--------");
+//                }
+
                 Command commandObject = game.getCommandObject(actionsInput);
 //                System.out.println(actionsInput.getCommand());
 //                System.out.println(game.rowHasTanks(1));
@@ -112,6 +129,7 @@ public final class Main {
 //                System.out.println();
 //                System.out.println();
             }
+//            game.resetCards();
         });
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();

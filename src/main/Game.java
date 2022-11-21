@@ -212,6 +212,19 @@ public final class Game {
         return player1.getHeroCard().getHealth() <= 0 || player2.getHeroCard().getHealth() <= 0;
     }
 
+    public void resetCards() {
+        player1.getHand().forEach(card -> getPlayer1Deck().getCards().add(card));
+        player2.getHand().forEach(card -> getPlayer2Deck().getCards().add(card));
+
+        table.get(3).forEach(card -> getPlayer1Deck().getCards().add(card));
+        table.get(2).forEach(card -> getPlayer1Deck().getCards().add(card));
+        table.get(1).forEach(card -> getPlayer2Deck().getCards().add(card));
+        table.get(0).forEach(card -> getPlayer2Deck().getCards().add(card));
+
+        player1.getHand().clear();
+        player2.getHand().clear();
+    }
+
     public Command getCommandObject(ActionsInput actionsInput) {
         return switch (actionsInput.getCommand()) {
             case "getPlayerDeck" -> new GetPlayerDeck(this, actionsInput.getPlayerIdx());

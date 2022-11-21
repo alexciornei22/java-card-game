@@ -76,4 +76,12 @@ public class Card {
         } else
             return (playerIdx == 1)? 3 : 0;
     }
+
+    @Override
+    public String toString() {
+        return "Card{" +
+                name + "," +
+                mana + "," +
+                description;
+    }
 }
