@@ -69,7 +69,7 @@ Starting audit...
 [ERROR] /home/student/poo-tema1/./src/main/command/GetCardAtPosition.java:13:48: Parameter y should be final. [FinalParameters]
 [ERROR] /home/student/poo-tema1/./src/main/command/GetCardAtPosition.java:19:5: Class 'GetCardAtPosition' looks like designed for extension (can be subclassed), but the method 'execute' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'GetCardAtPosition' final or making the method 'execute' static/final/abstract/empty, or adding allowed annotation for the method. [DesignForExtension]
 [ERROR] /home/student/poo-tema1/./src/main/command/GetCardAtPosition.java:20:25: Parameter output should be final. [FinalParameters]
-[ERROR] /home/student/poo-tema1/./src/main/command/GetCardAtPosition.java:25: Line is longer than 100 characters (found 114). [LineLength]
+[ERROR] /home/student/poo-tema1/./src/main/command/GetCardAtPosition.java:25: Line is longer than 100 characters (found 113). [LineLength]
 [ERROR] /home/student/poo-tema1/./src/main/command/UseEnvironmentCard.java:10:10: Variable 'game' must be private and have accessor methods. [VisibilityModifier]
 [ERROR] /home/student/poo-tema1/./src/main/command/UseEnvironmentCard.java:11:9: Variable 'handIdx' must be private and have accessor methods. [VisibilityModifier]
 [ERROR] /home/student/poo-tema1/./src/main/command/UseEnvironmentCard.java:12:9: Variable 'affectedRow' must be private and have accessor methods. [VisibilityModifier]

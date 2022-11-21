@@ -22,6 +22,8 @@ public class GetCardAtPosition implements Command {
 
         output.addObject()
                 .put("command", "getCardAtPosition")
-                .putPOJO("output", (card != null) ? new MinionCard(card) : "No card available at that position.");
+                .putPOJO("output", (card != null) ? new MinionCard(card) : "No card available at that position.")
+                .put("x", x)
+                .put("y", y);
     }
 }
