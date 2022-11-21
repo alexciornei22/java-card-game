@@ -56,6 +56,10 @@ public class MinionCard extends Card {
         this.attackDamage = attackDamage;
     }
 
+    public void addAttackDamage(int attackDamage) {
+        this.attackDamage += attackDamage;
+    }
+
     public void removeAttackDamage(int attackDamage) {
         this.attackDamage -= attackDamage;
         if (this.attackDamage < 0)
