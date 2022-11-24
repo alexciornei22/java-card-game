@@ -3,22 +3,21 @@ package main.command;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import main.Game;
 import main.card.Card;
-import main.card.EnvironmentCard;
 import main.card.MinionCard;
 
 import java.util.ArrayList;
 
-public class GetCardsInHand implements Command {
-    Game game;
-    int playerIdx;
+public final class GetCardsInHand implements Command {
+    private final Game game;
+    private final int playerIdx;
 
-    public GetCardsInHand(Game game, int playerIdx) {
+    public GetCardsInHand(final Game game, final int playerIdx) {
         this.game = game;
         this.playerIdx = playerIdx;
     }
 
     @Override
-    public void execute(ArrayNode output) {
+    public void execute(final ArrayNode output) {
         ArrayList<Card> clone = new ArrayList<>();
 
         if ((playerIdx == 1)) {

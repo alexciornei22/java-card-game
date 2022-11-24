@@ -4,17 +4,17 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import main.Game;
 import main.card.HeroCard;
 
-public class GetPlayerHero implements Command {
-    Game game;
-    int playerIdx;
+public final class GetPlayerHero implements Command {
+    private final Game game;
+    private final int playerIdx;
 
-    public GetPlayerHero(Game game, int playerIdx) {
+    public GetPlayerHero(final Game game, final int playerIdx) {
         this.game = game;
         this.playerIdx = playerIdx;
     }
 
     @Override
-    public void execute(ArrayNode output) {
+    public void execute(final ArrayNode output) {
         output.addObject()
                 .put("command", "getPlayerHero")
                 .put("playerIdx", playerIdx)

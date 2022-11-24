@@ -6,15 +6,15 @@ import main.card.MinionCard;
 
 import java.util.ArrayList;
 
-public class GetFrozenCardsOnTable implements Command {
-    Game game;
+public final class GetFrozenCardsOnTable implements Command {
+    private final Game game;
 
-    public GetFrozenCardsOnTable(Game game) {
+    public GetFrozenCardsOnTable(final Game game) {
         this.game = game;
     }
 
     @Override
-    public void execute(ArrayNode output) {
+    public void execute(final ArrayNode output) {
         ArrayList<MinionCard> cards = new ArrayList<>();
         game.getCardsOnTable().forEach(row -> {
             row.stream()

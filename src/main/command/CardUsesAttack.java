@@ -5,20 +5,21 @@ import fileio.Coordinates;
 import main.Game;
 import main.card.MinionCard;
 
-public class CardUsesAttack implements Command {
-    Game game;
-    Coordinates attacker;
-    Coordinates defender;
+public final class CardUsesAttack implements Command {
+    private final Game game;
+    private final Coordinates attacker;
+    private final Coordinates defender;
 
-    public CardUsesAttack(Game game, Coordinates attacker, Coordinates defender) {
+    public CardUsesAttack(final Game game,
+                          final Coordinates attacker,
+                          final Coordinates defender) {
         this.game = game;
         this.attacker = attacker;
         this.defender = defender;
     }
 
     @Override
-    public void execute(ArrayNode output) {
-
+    public void execute(final ArrayNode output) {
         boolean error = false;
         String errorMessage = null;
         if (!game.rowBelongsToEnemy(defender.getX())) {
@@ -55,8 +56,9 @@ public class CardUsesAttack implements Command {
                     .put("error", errorMessage);
         } else {
             MinionCard enemy = game.getCardAtPosition(defender.getX(), defender.getY());
-            if (enemy == null)
+            if (enemy == null) {
                 return;
+            }
 
             card.attackCard(enemy);
             game.cardHasAttacked(card);

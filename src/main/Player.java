@@ -6,7 +6,7 @@ import main.card.HeroCard;
 
 import java.util.ArrayList;
 
-public class Player {
+public final class Player {
     ArrayList<Deck> decks = new ArrayList<>();
     ArrayList<Card> hand = new ArrayList<>();
     HeroCard heroCard;

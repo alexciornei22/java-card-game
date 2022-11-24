@@ -6,20 +6,20 @@ import main.Player;
 import main.card.Card;
 import main.card.EnvironmentCard;
 
-public class UseEnvironmentCard implements Command {
-    Game game;
-    int handIdx;
-    int affectedRow;
+public final class UseEnvironmentCard implements Command {
+    private final Game game;
+    private final int handIdx;
+    private final int affectedRow;
 
-    public UseEnvironmentCard(Game game, int handIdx, int affectedRow) {
+    public UseEnvironmentCard(final Game game, final int handIdx, final int affectedRow) {
         this.game = game;
         this.handIdx = handIdx;
         this.affectedRow = affectedRow;
     }
 
     @Override
-    public void execute(ArrayNode output) {
-        Player player = (game.getPlayerTurn() == 1)? game.getPlayer1() : game.getPlayer2();
+    public void execute(final ArrayNode output) {
+        Player player = (game.getPlayerTurn() == 1) ? game.getPlayer1() : game.getPlayer2();
 
         Card card = player.getHand().get(handIdx);
 
@@ -37,7 +37,8 @@ public class UseEnvironmentCard implements Command {
         }
 
 
-        if (card.getName().equals("Heart Hound") && game.isRowFull(game.getMirrorRow(affectedRow))) {
+        if (card.getName().equals("Heart Hound")
+                && game.isRowFull(game.getMirrorRow(affectedRow))) {
             error = true;
             errorMessage = "Cannot steal enemy card since the player's row is full.";
         }

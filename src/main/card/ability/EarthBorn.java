@@ -5,9 +5,9 @@ import main.card.MinionCard;
 
 import java.util.ArrayList;
 
-public class EarthBorn implements RowAbility {
+public final class EarthBorn implements RowAbility {
     @Override
-    public void use(Game game, int affectedRow) {
+    public void use(final Game game, final int affectedRow) {
         ArrayList<MinionCard> cards = game.getRow(affectedRow);
         cards.forEach(card -> card.addHealth(1));
     }

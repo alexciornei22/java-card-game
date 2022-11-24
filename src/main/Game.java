@@ -4,14 +4,17 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
 import fileio.StartGameInput;
 import main.card.Card;
-import main.card.HeroCard;
+
 import main.card.MinionCard;
 import main.command.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public final class Game {
+    public static final int MAX_MANA_ADDED_PER_TURN = 10;
+    public static final int MAX_CARDS_PER_ROW = 5;
+    public static final int PLAYER_ONE_BACK_ROW = 3;
+
     public static final List<String> ENVIRONMENT_CARDS = Collections.unmodifiableList(
             Arrays.asList(
                     "Winterfell",
@@ -42,18 +45,19 @@ public final class Game {
             )
     );
 
-    Player player1;
-    Player player2;
-    int player1DeckId;
-    int player2DeckId;
-    int turn = 1;
-    int round = 1;
-    int playerTurn;
-    ArrayList<ArrayList<MinionCard>> table = new ArrayList<ArrayList<MinionCard>>();
-    ArrayList<Card> haveAttacked = new ArrayList<>();
+    private final Player player1;
+    private final Player player2;
+    private final int player1DeckId;
+    private final int player2DeckId;
+    private int turn = 1;
+    private int round = 1;
+    private int playerTurn;
+    private final ArrayList<ArrayList<MinionCard>> table = new ArrayList<ArrayList<MinionCard>>();
+    private final ArrayList<Card> haveAttacked = new ArrayList<>();
 
-    public Game(Player player1, Player player2, StartGameInput startGameInput) {
-
+    public Game(final Player player1,
+                final Player player2,
+                final StartGameInput startGameInput) {
         this.player1 = player1;
         this.player2 = player2;
         player1DeckId = startGameInput.getPlayerOneDeckIdx();
@@ -65,8 +69,14 @@ public final class Game {
         table.add(new ArrayList<MinionCard>());
         table.add(new ArrayList<MinionCard>());
 
-        Collections.shuffle(getPlayer1Deck().getCards(), new Random(startGameInput.getShuffleSeed()));
-        Collections.shuffle(getPlayer2Deck().getCards(), new Random(startGameInput.getShuffleSeed()));
+        Collections.shuffle(
+                getPlayer1Deck().getCards(),
+                new Random(startGameInput.getShuffleSeed())
+        );
+        Collections.shuffle(
+                getPlayer2Deck().getCards(),
+                new Random(startGameInput.getShuffleSeed())
+        );
 
         player1.addCardToHand(player1DeckId);
         player2.addCardToHand(player2DeckId);
@@ -81,7 +91,7 @@ public final class Game {
     }
 
     public Player getEnemyPlayer() {
-        return (playerTurn == 1)? player2 : player1;
+        return (playerTurn == 1) ? player2 : player1;
     }
 
     public Deck getPlayer1Deck() {
@@ -100,45 +110,56 @@ public final class Game {
         return playerTurn;
     }
 
-    public void setPlayerTurn(int playerTurn) {
-        this.playerTurn = playerTurn;
-    }
-
     public ArrayList<Card> getHaveAttacked() {
         return haveAttacked;
     }
 
-    public void cardHasAttacked(Card card) {
+    /**
+     * @param card Card which has attacked
+     */
+    public void cardHasAttacked(final Card card) {
         this.haveAttacked.add(card);
     }
 
+    /**
+     * clear the lists of cards that have attacked this turn
+     */
     public void resetHaveAttacked() {
         this.haveAttacked.clear();
     }
 
+    /**
+     * unfreezes cards at the end of a turn
+     */
     public void unfreezeCards() {
         if (playerTurn == 1) {
             getRow(2).forEach(card -> card.setFrozen(false));
-            getRow(3).forEach(card -> card.setFrozen(false));
+            getRow(PLAYER_ONE_BACK_ROW).forEach(card -> card.setFrozen(false));
         } else {
             getRow(0).forEach(card -> card.setFrozen(false));
             getRow(1).forEach(card -> card.setFrozen(false));
         }
     }
 
+    /**
+     * unfreezes cards,
+     * changes the current player,
+     * adds mana to each player if the round has ended
+     */
     public void endCurrentTurn() {
-        if (++turn > 2)
+        if (++turn > 2) {
             nextRound();
+        }
 
         unfreezeCards();
-        playerTurn = (playerTurn == 1)? 2 : 1;
+        playerTurn = (playerTurn == 1) ? 2 : 1;
     }
 
     private void nextRound() {
         round++;
         turn = 1;
 
-        int extraMana = Math.min(round, 10);
+        int extraMana = Math.min(round, MAX_MANA_ADDED_PER_TURN);
         player1.addMana(extraMana);
         player2.addMana(extraMana);
 
@@ -146,37 +167,68 @@ public final class Game {
         player2.addCardToHand(player2DeckId);
     }
 
-    public boolean isRowFull(int row) {
-        return table.get(row).size() == 5;
+    /**
+     * @param row a row on the table [0-3]
+     * @return true if the row is full, false if not
+     */
+    public boolean isRowFull(final int row) {
+        return table.get(row).size() == MAX_CARDS_PER_ROW;
     }
 
-    public boolean rowBelongsToEnemy(int row) {
-        if (playerTurn == 1 && (row == 2 || row == 3))
+    /**
+     * @param row a row on the table [0-3]
+     * @return true if the row belongs to the enemy, false if not
+     */
+    public boolean rowBelongsToEnemy(final int row) {
+        if (playerTurn == 1 && (row == 2 || row == PLAYER_ONE_BACK_ROW)) {
             return false;
-        if (playerTurn == 2 && (row == 0 || row == 1))
+        }
+        if (playerTurn == 2 && (row == 0 || row == 1)) {
             return false;
+        }
         return true;
     }
 
-    public int getMirrorRow(int row) {
-        if (playerTurn == 1)
-            return (row == 0)? 3 : 2;
-        return (row == 3)? 0 : 1;
+    /**
+     * @param row a row on the table [0-3]
+     * @return the opposite row, belonging to the enemy
+     */
+    public int getMirrorRow(final int row) {
+        if (playerTurn == 1) {
+            return (row == 0) ? PLAYER_ONE_BACK_ROW : 2;
+        }
+        return (row == PLAYER_ONE_BACK_ROW) ? 0 : 1;
     }
 
-    public void placeCardOnTable(MinionCard card, int row) {
+    /**
+     * @param card card to be placed on the table
+     * @param row the row on which it should be placed
+     */
+    public void placeCardOnTable(final MinionCard card, final int row) {
         table.get(row).add(card);
     }
 
+    /**
+     * @return ArrayList of the rows on the table
+     */
     public ArrayList<ArrayList<MinionCard>> getCardsOnTable() {
         return table;
     }
 
-    public ArrayList<MinionCard> getRow(int row) {
+    /**
+     * @param row a row on the table [0-3]
+     * @return ArrayList of cards in a row
+     */
+    public ArrayList<MinionCard> getRow(final int row) {
         return table.get(row);
     }
 
-    public MinionCard getCardAtPosition(int x, int y) {
+    /**
+     * @param x x position on table
+     * @param y y position on table
+     * @return the Card found at the specified position on the table
+     */
+    public MinionCard getCardAtPosition(final int x, final int y) {
         try {
             return table.get(x).get(y);
         } catch (IndexOutOfBoundsException e) {
@@ -184,6 +236,9 @@ public final class Game {
         }
     }
 
+    /**
+     * removes the cards with <= 0 health from the table
+     */
     public void removeDeadCards() {
         table.forEach(minionCards -> {
             List<MinionCard> deadCards = minionCards.stream()
@@ -193,7 +248,11 @@ public final class Game {
         });
     }
 
-    public boolean rowHasTanks(int row) {
+    /**
+     * @param row a row on the table [0-3]
+     * @return true if the row has tank cards
+     */
+    public boolean rowHasTanks(final int row) {
         List<MinionCard> tanks = getRow(row).stream()
                 .filter(card -> TANK_CARDS.contains(card.getName()))
                 .toList();
@@ -201,6 +260,9 @@ public final class Game {
         return tanks.size() != 0;
     }
 
+    /**
+     * @return true if the enemy has tank cards
+     */
     public boolean enemyHasTanks() {
         if (playerTurn == 1) {
             return rowHasTanks(1);
@@ -208,24 +270,31 @@ public final class Game {
         return rowHasTanks(2);
     }
 
+    /**
+     * @return true if the game is over (a hero is dead)
+     */
     public boolean isGameOver() {
         return player1.getHeroCard().getHealth() <= 0 || player2.getHeroCard().getHealth() <= 0;
     }
 
-    public void resetCards() {
-        player1.getHand().forEach(card -> getPlayer1Deck().getCards().add(card));
-        player2.getHand().forEach(card -> getPlayer2Deck().getCards().add(card));
+//    public void resetCards() {
+//        player1.getHand().forEach(card -> getPlayer1Deck().getCards().add(card));
+//        player2.getHand().forEach(card -> getPlayer2Deck().getCards().add(card));
+//
+//        table.get(3).forEach(card -> getPlayer1Deck().getCards().add(card));
+//        table.get(2).forEach(card -> getPlayer1Deck().getCards().add(card));
+//        table.get(1).forEach(card -> getPlayer2Deck().getCards().add(card));
+//        table.get(0).forEach(card -> getPlayer2Deck().getCards().add(card));
+//
+//        player1.getHand().clear();
+//        player2.getHand().clear();
+//    }
 
-        table.get(3).forEach(card -> getPlayer1Deck().getCards().add(card));
-        table.get(2).forEach(card -> getPlayer1Deck().getCards().add(card));
-        table.get(1).forEach(card -> getPlayer2Deck().getCards().add(card));
-        table.get(0).forEach(card -> getPlayer2Deck().getCards().add(card));
-
-        player1.getHand().clear();
-        player2.getHand().clear();
-    }
-
-    public Command getCommandObject(ActionsInput actionsInput) {
+    /**
+     * @param actionsInput action input object from fileio
+     * @return the command object to be executed
+     */
+    public Command getCommandObject(final ActionsInput actionsInput) {
         return switch (actionsInput.getCommand()) {
             case "getPlayerDeck" -> new GetPlayerDeck(this, actionsInput.getPlayerIdx());
             case "getPlayerHero" -> new GetPlayerHero(this, actionsInput.getPlayerIdx());
@@ -233,9 +302,15 @@ public final class Game {
             case "endPlayerTurn" -> new EndPlayerTurn(this);
             case "placeCard" -> new PlaceCard(this, actionsInput.getHandIdx());
             case "cardUsesAttack" ->
-                    new CardUsesAttack(this, actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
+                    new CardUsesAttack(
+                            this,
+                            actionsInput.getCardAttacker(),
+                            actionsInput.getCardAttacked());
             case "cardUsesAbility" ->
-                    new CardUsesAbility(this, actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
+                    new CardUsesAbility(
+                            this,
+                            actionsInput.getCardAttacker(),
+                            actionsInput.getCardAttacked());
             case "useAttackHero" -> new UseAttackHero(this, actionsInput.getCardAttacker());
             case "useHeroAbility" -> new UseHeroAbility(this, actionsInput.getAffectedRow());
             case "getPlayerMana" -> new GetPlayerMana(this, actionsInput.getPlayerIdx());
@@ -243,16 +318,26 @@ public final class Game {
             case "getCardsOnTable" -> new GetCardsOnTable(this);
             case "getFrozenCardsOnTable" -> new GetFrozenCardsOnTable(this);
             case "useEnvironmentCard" ->
-                    new UseEnvironmentCard(this, actionsInput.getHandIdx(), actionsInput.getAffectedRow());
-            case "getEnvironmentCardsInHand" -> new GetEnvironmentCardsInHand(this, actionsInput.getPlayerIdx());
-            case "getCardAtPosition" -> new GetCardAtPosition(this, actionsInput.getX(), actionsInput.getY());
+                    new UseEnvironmentCard(
+                            this,
+                            actionsInput.getHandIdx(),
+                            actionsInput.getAffectedRow());
+            case "getEnvironmentCardsInHand" -> new GetEnvironmentCardsInHand(
+                    this,
+                    actionsInput.getPlayerIdx());
+            case "getCardAtPosition" -> new GetCardAtPosition(
+                    this,
+                    actionsInput.getX(),
+                    actionsInput.getY());
             case "getTotalGamesPlayed" -> new GetTotalGamesPlayed();
             case "getPlayerOneWins" -> new GetPlayerOneWins();
             case "getPlayerTwoWins" -> new GetPlayerTwoWins();
             default -> new Command() {
                 @Override
-                public void execute(ArrayNode output) {
-                    output.addObject().put("error", "Command not found: " + actionsInput.getCommand());
+                public void execute(final ArrayNode output) {
+                    output.addObject().put(
+                            "error",
+                            "Command not found: " + actionsInput.getCommand());
                 }
             };
         };

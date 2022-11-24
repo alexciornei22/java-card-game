@@ -1,15 +1,19 @@
 package main;
 
-public class Statistics {
-    private static final Statistics instance = new Statistics();
-    int gamesPlayed = 0;
-    int player1Wins = 0;
-    int player2Wins = 0;
+public final class Statistics {
+    /**
+     * Singleton class for the statistics of the played games
+     */
 
-    private Statistics() {}
+    private static final Statistics INSTANCE = new Statistics();
+    private int gamesPlayed = 0;
+    private int player1Wins = 0;
+    private int player2Wins = 0;
+
+    private Statistics() { }
 
     public static Statistics getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     public int getGamesPlayed() {
@@ -24,15 +28,22 @@ public class Statistics {
         return player2Wins;
     }
 
-    public void addWin(int player) {
-        if (player == 1)
+    /**
+     * @param player player who won
+     */
+    public void addWin(final int player) {
+        if (player == 1) {
             player1Wins += 1;
-        else
+        } else {
             player2Wins += 1;
+        }
 
         gamesPlayed += 1;
     }
 
+    /**
+     * resets statistics
+     */
     public void reset() {
         gamesPlayed = 0;
         player1Wins = 0;

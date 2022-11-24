@@ -3,15 +3,15 @@ package main.command;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import main.Game;
 
-public class GetPlayerTurn implements Command {
-    Game game;
+public final class GetPlayerTurn implements Command {
+    private final Game game;
 
-    public GetPlayerTurn(Game game) {
+    public GetPlayerTurn(final Game game) {
         this.game = game;
     }
 
     @Override
-    public void execute(ArrayNode output) {
+    public void execute(final ArrayNode output) {
         output.addObject()
                 .put("command", "getPlayerTurn")
                 .put("output", game.getPlayerTurn());

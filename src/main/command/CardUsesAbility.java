@@ -5,19 +5,21 @@ import fileio.Coordinates;
 import main.Game;
 import main.card.MinionCard;
 
-public class CardUsesAbility implements Command {
-    Game game;
-    Coordinates attacker;
-    Coordinates defender;
+public final class CardUsesAbility implements Command {
+    private final Game game;
+    private final Coordinates attacker;
+    private final Coordinates defender;
 
-    public CardUsesAbility(Game game, Coordinates attacker, Coordinates defender) {
+    public CardUsesAbility(final Game game,
+                           final Coordinates attacker,
+                           final Coordinates defender) {
         this.game = game;
         this.attacker = attacker;
         this.defender = defender;
     }
 
     @Override
-    public void execute(ArrayNode output) {
+    public void execute(final ArrayNode output) {
         MinionCard card = game.getCardAtPosition(attacker.getX(), attacker.getY());
         boolean error = false;
         String errorMessage = null;
@@ -43,7 +45,9 @@ public class CardUsesAbility implements Command {
             if (!game.rowBelongsToEnemy(defender.getX())) {
                 error = true;
                 errorMessage = "Attacked card does not belong to the enemy.";
-            } else if (target != null && game.enemyHasTanks() && !Game.TANK_CARDS.contains(target.getName())) {
+            } else if (target != null
+                    && game.enemyHasTanks()
+                    && !Game.TANK_CARDS.contains(target.getName())) {
                 error = true;
                 errorMessage = "Attacked card is not of type 'Tank'.";
             }

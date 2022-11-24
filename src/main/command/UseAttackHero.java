@@ -6,17 +6,17 @@ import main.Game;
 import main.Statistics;
 import main.card.MinionCard;
 
-public class UseAttackHero implements Command {
-    Game game;
-    Coordinates attacker;
+public final class UseAttackHero implements Command {
+    private final Game game;
+    private final Coordinates attacker;
 
-    public UseAttackHero(Game game, Coordinates attacker) {
+    public UseAttackHero(final Game game, final Coordinates attacker) {
         this.game = game;
         this.attacker = attacker;
     }
 
     @Override
-    public void execute(ArrayNode output) {
+    public void execute(final ArrayNode output) {
         MinionCard card = game.getCardAtPosition(attacker.getX(), attacker.getY());
         boolean error = false;
         String errorMessage = null;
@@ -50,9 +50,9 @@ public class UseAttackHero implements Command {
                 statistics.addWin(game.getPlayerTurn());
 
                 output.addObject()
-                        .put("gameEnded", "Player " +
-                                ((game.getPlayerTurn() == 1)? "one" : "two") +
-                                " killed the enemy hero.");
+                        .put("gameEnded", "Player "
+                                + ((game.getPlayerTurn() == 1) ? "one" : "two")
+                                + " killed the enemy hero.");
             }
         }
     }

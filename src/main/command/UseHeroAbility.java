@@ -5,20 +5,20 @@ import main.Game;
 import main.Player;
 import main.card.HeroCard;
 
-public class UseHeroAbility implements Command {
-    Game game;
-    int affectedRow;
+public final class UseHeroAbility implements Command {
+    private final Game game;
+    private final int affectedRow;
 
-    public UseHeroAbility(Game game, int affectedRow) {
+    public UseHeroAbility(final Game game, final int affectedRow) {
         this.game = game;
         this.affectedRow = affectedRow;
     }
 
     @Override
-    public void execute(ArrayNode output) {
+    public void execute(final ArrayNode output) {
         boolean error = false;
         String errorMessage = null;
-        Player player = (game.getPlayerTurn() == 1)? game.getPlayer1() : game.getPlayer2();
+        Player player = (game.getPlayerTurn() == 1) ? game.getPlayer1() : game.getPlayer2();
         HeroCard hero = player.getHeroCard();
 
         if (player.getMana() < hero.getMana()) {

@@ -6,18 +6,18 @@ import main.Player;
 import main.card.Card;
 import main.card.MinionCard;
 
-public class PlaceCard implements Command {
-    Game game;
-    int handIdx;
+public final class PlaceCard implements Command {
+    private final Game game;
+    private final int handIdx;
 
-    public PlaceCard(Game game, int handIdx) {
+    public PlaceCard(final Game game, final int handIdx) {
         this.game = game;
         this.handIdx = handIdx;
     }
 
     @Override
-    public void execute(ArrayNode output) {
-        Player player = (game.getPlayerTurn() == 1)? game.getPlayer1() : game.getPlayer2();
+    public void execute(final ArrayNode output) {
+        Player player = (game.getPlayerTurn() == 1) ? game.getPlayer1() : game.getPlayer2();
 
         Card card = player.getHand().get(handIdx);
 

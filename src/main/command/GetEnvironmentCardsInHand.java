@@ -5,22 +5,20 @@ import main.Game;
 import main.Player;
 import main.card.Card;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class GetEnvironmentCardsInHand implements Command {
-    Game game;
-    int playerIdx;
+public final class GetEnvironmentCardsInHand implements Command {
+    private final Game game;
+    private final int playerIdx;
 
-    public GetEnvironmentCardsInHand(Game game, int playerIdx) {
+    public GetEnvironmentCardsInHand(final Game game, final int playerIdx) {
         this.game = game;
         this.playerIdx = playerIdx;
     }
 
     @Override
-    public void execute(ArrayNode output) {
-        Player player = (game.getPlayerTurn() == 1)? game.getPlayer1() : game.getPlayer2();
+    public void execute(final ArrayNode output) {
+        Player player = (game.getPlayerTurn() == 1) ? game.getPlayer1() : game.getPlayer2();
 
         List<Card> envCards = player.getHand().stream()
                 .filter(card -> Game.ENVIRONMENT_CARDS.contains(card.getName()))

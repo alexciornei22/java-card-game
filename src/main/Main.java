@@ -7,25 +7,17 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import checker.CheckerConstants;
 import fileio.ActionsInput;
-import fileio.CardInput;
 import fileio.Input;
 import fileio.StartGameInput;
-import main.card.Card;
-import main.card.EnvironmentCard;
 import main.card.HeroCard;
-import main.card.MinionCard;
 import main.command.Command;
-import main.command.GetPlayerDeck;
 
-import javax.swing.plaf.IconUIResource;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * The entry point to this homework. It runs the checker that tests your implentation.
@@ -97,20 +89,11 @@ public final class Main {
                     startGameInput
             );
 
-            for (ActionsInput actionsInput:
-                 gameInput.getActions()) {
+            for (ActionsInput actionsInput
+                    : gameInput.getActions()) {
                 Command commandObject = game.getCommandObject(actionsInput);
-//                System.out.println(actionsInput.getCommand());
-//                System.out.println(game.rowHasTanks(1));
-//                System.out.println(game.rowHasTanks(2));
-
                 commandObject.execute(output);
                 game.removeDeadCards();
-//                game.getPlayer1().getHand().forEach(card -> System.out.print(card.getName() + " "));
-//                System.out.println();
-//                game.getPlayer2().getHand().forEach(card -> System.out.print(card.getName() + " "));
-//                System.out.println();
-//                System.out.println();
             }
 
             Statistics.getInstance().reset();

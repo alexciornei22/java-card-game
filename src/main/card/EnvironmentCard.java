@@ -4,14 +4,19 @@ import fileio.CardInput;
 import main.Game;
 import main.card.ability.RowAbility;
 
-public class EnvironmentCard extends Card {
-    RowAbility rowAbility;
-    public EnvironmentCard(CardInput cardInput, RowAbility rowAbility) {
+public final class EnvironmentCard extends Card {
+    private final RowAbility rowAbility;
+    public EnvironmentCard(final CardInput cardInput,
+                           final RowAbility rowAbility) {
         super(cardInput);
         this.rowAbility = rowAbility;
     }
 
-    public void useRowAbility(Game game, int affectedRow) {
+    /**
+     * @param game instance of Game
+     * @param affectedRow the row on which the ability is used
+     */
+    public void useRowAbility(final Game game, final int affectedRow) {
         rowAbility.use(game, affectedRow);
     }
 }

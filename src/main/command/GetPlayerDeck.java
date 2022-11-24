@@ -1,23 +1,22 @@
 package main.command;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import main.Deck;
 import main.Game;
 import main.card.Card;
 
 import java.util.ArrayList;
 
-public class GetPlayerDeck implements Command {
-    Game game;
-    int playerIdx;
+public final class GetPlayerDeck implements Command {
+    private final Game game;
+    private final int playerIdx;
 
-    public GetPlayerDeck(Game game, int playerIdx) {
+    public GetPlayerDeck(final Game game, final int playerIdx) {
         this.game = game;
         this.playerIdx = playerIdx;
     }
 
     @Override
-    public void execute(ArrayNode output) {
+    public void execute(final ArrayNode output) {
         output.addObject()
                 .put("command", "getPlayerDeck")
                 .put("playerIdx", playerIdx)

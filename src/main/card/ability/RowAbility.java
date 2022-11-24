@@ -1,11 +1,11 @@
 package main.card.ability;
 
 import main.Game;
-import main.card.Card;
-import main.card.MinionCard;
-
-import java.util.ArrayList;
 
 public interface RowAbility {
+    /**
+     * @param game instance of Game
+     * @param affectedRow row on which the ability is used
+     */
     void use(Game game, int affectedRow);
 }
