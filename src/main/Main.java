@@ -73,7 +73,6 @@ public final class Main {
 
         ArrayNode output = objectMapper.createArrayNode();
 
-        //TODO add here the entry point to your implementation
         Player player1 = new Player(inputData.getPlayerOneDecks());
         Player player2 = new Player(inputData.getPlayerTwoDecks());
 
