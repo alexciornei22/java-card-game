@@ -246,6 +246,9 @@ public final class Game {
                     new UseEnvironmentCard(this, actionsInput.getHandIdx(), actionsInput.getAffectedRow());
             case "getEnvironmentCardsInHand" -> new GetEnvironmentCardsInHand(this, actionsInput.getPlayerIdx());
             case "getCardAtPosition" -> new GetCardAtPosition(this, actionsInput.getX(), actionsInput.getY());
+            case "getTotalGamesPlayed" -> new GetTotalGamesPlayed();
+            case "getPlayerOneWins" -> new GetPlayerOneWins();
+            case "getPlayerTwoWins" -> new GetPlayerTwoWins();
             default -> new Command() {
                 @Override
                 public void execute(ArrayNode output) {
